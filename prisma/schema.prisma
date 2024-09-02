@@ -14,30 +14,45 @@ datasource db {
 }
 
 model ExpenseCategory {
-  id          String              @id @default(uuid())
-  name        ExpenseCategoryName @default(OTHER)
+  uuid          String    @id @default(uuid())
+  name        String    @unique
   description String
-  Expense     Expense[]
+  expenses    Expense[]
+  User        User?     @relation(fields: [created_by], references: [uuid])
+  created_by  String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 
   @@map("expense_categories")
-}
-
-enum ExpenseCategoryName {
-  SUPERFLUOUS
-  RENT
-  FOOD
-  TRANSPORTATION
-  ENTERTAINMENT
-  OTHER
 }
 
 model Expense {
   id          String          @id @default(uuid())
   description String          @default("")
   amount      Float
-  category    ExpenseCategory @relation(fields: [categoryId], references: [id])
-  categoryId  String
-  date        DateTime        @default(now())
+  category    ExpenseCategory @relation(fields: [category_id], references: [uuid])
+  category_id String
+  User        User?           @relation(fields: [created_by], references: [uuid])
+  created_by  String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 
   @@map("expenses")
+}
+
+model User {
+  uuid       String    @id @default(uuid())
+  name     String
+  email    String    @unique
+  password String
+  expenses Expense[]
+
+  ExpenseCategory ExpenseCategory[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("users")
 }
