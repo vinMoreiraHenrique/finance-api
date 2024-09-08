@@ -1,0 +1,60 @@
+model ExpenseCategory {
+  uuid        String    @id @default(uuid())
+  name        String    @unique
+  description String
+  expenses    Expense[]
+  active      Boolean   @default(true)
+
+  created_by String? // Adicionar o campo para o relacionamento com o usuário que criou
+  updated_by String? // Adicionar o campo para o relacionamento com o usuário que atualizou
+
+  // Relacionamentos
+  CreatedBy User? @relation(name: "created_by_expense_category", fields: [created_by], references: [uuid])
+  UpdatedBy User? @relation(name: "updated_by_expense_category", fields: [updated_by], references: [uuid])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("expense_categories")
+}
+
+model Expense {
+  uuid        String @id @default(uuid())
+  description String @default("")
+  amount      Float
+  category_id String
+  active      Boolean @default(true)
+
+  created_by String? // Adicionar o campo para o relacionamento com o usuário que criou
+  updated_by String? // Adicionar o campo para o relacionamento com o usuário que atualizou
+
+  // Relacionamentos
+  Category  ExpenseCategory @relation(fields: [category_id], references: [uuid])
+  CreatedBy User?           @relation(name: "created_by_expense", fields: [created_by], references: [uuid])
+  UpdatedBy User?           @relation(name: "updated_by_expense", fields: [updated_by], references: [uuid])
+
+  // RecurringExpense
+
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @default(now()) @updatedAt
+  RecurringExpense RecurringExpense[]
+
+  @@map("expenses")
+}
+
+model RecurringExpense {
+  uuid String @id @default(uuid())
+
+  ExpenseId    Expense @relation(fields: [expense_uuid], references: [uuid])
+  expense_uuid String
+  active       Boolean @default(true)
+
+  created_by String? // Adicionar o campo para o relacionamento com o usuário que criou
+  updated_by String? // Adicionar o campo para o relacionamento com o usuário que atualizou
+
+  // Relacionamento
+  CreatedBy User? @relation(name: "created_by_expense", fields: [created_by], references: [uuid])
+  UpdatedBy User? @relation(name: "updated_by_expense", fields: [updated_by], references: [uuid])
+
+  @@map("recurring_expenses")
+}

@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 import { UserRepository } from "../repositories/index";
 
-export class UserService {
+export class CreateUserService {
   private userRepository = new UserRepository();
 
 

@@ -1,34 +1,38 @@
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
+import prisma from "../lib/prisma";
+import { hashPassword } from "../utils/defaultPrismaFields";
 
 export class UserRepository {
-    private prisma = new PrismaClient();
+  async list(email: string, name: string, active?: boolean | undefined) {
+    return prisma.user.findMany({
+      orderBy: {
+        created_at: "asc",
+      },
+      where: {
+        ...(email ? { email } : {}),
+        ...(name ? { name: { contains: name } } : {}),
+        ...(active !== undefined && { active })
+      },
+    });
+  }
+  async find(uuid: string) {
+    return prisma.user.findUnique({
+      where: { uuid },
+    });
+  }
 
-    async find(uuid: string) {
-        return this.prisma.user.findUnique({
-            where: { uuid },
-        });
-    }
+  async findByEmail(email: string) {
+    return prisma.user.findUnique({
+      where: { email },
+    });
+  }
 
-    async findByEmail(email: string) {
-        return this.prisma.user.findUnique({
-            where: { email },
-        });
-    }
-
-    async hashPassword(password: string){
-        const hashedPassword = await bcrypt.hash(password, 10);
-        return hashedPassword
-    }
-
-    async create(name: string, email: string, password: string) {
-        return this.prisma.user.create({
-            data: {
-                name: name,
-                email: email,
-                password: await this.hashPassword(password),
-            }
-        });
-    }
+  async create(name: string, email: string, password: string) {
+    return prisma.user.create({
+      data: {
+        name: name,
+        email: email,
+        password: await hashPassword(password),
+      },
+    });
+  }
 }
-
