@@ -1,7 +1,7 @@
 //create route user
 
 import { Router } from "express";
-import { UserController } from "../../controllers/UserControllers/imports";
+import { UserController } from "../../controllers/Users";
 
 
 

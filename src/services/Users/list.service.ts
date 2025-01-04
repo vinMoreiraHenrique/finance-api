@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { UserRepository } from "../repositories/index";
+import { UserRepository } from "../../repositories/index";
 
 export class ListUserService {
   private userRepository = new UserRepository();
